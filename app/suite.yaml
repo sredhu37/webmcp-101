@@ -1,0 +1,15 @@
+# Scenarios for the WebMCP comparer. Start the shop with `npm start` in app/,
+# then set the Site URL in the comparer to http://localhost:4000.
+scenarios:
+  - id: cheapest-red-shirt-price
+    prompt: What does the cheapest red shirt cost?
+    success:
+      - answerContains: '19.99'
+  - id: add-sneakers-in-size
+    prompt: Add the blue sneakers in size 42 to the cart.
+    success:
+      - script: "fetch('/api/cart').then(r => r.json()).then(c => c.items.some(i => i.productId === 'blue-sneakers' && i.size === '42'))"
+  - id: two-items-and-checkout
+    prompt: Buy the cheapest red shirt in size M and one black hat, then check out as Jane Doe, jane@example.com, Hauptstr. 1, Düsseldorf.
+    success:
+      - textVisible: Order placed

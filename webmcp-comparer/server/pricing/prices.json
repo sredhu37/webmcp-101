@@ -1,0 +1,168 @@
+{
+  "version": "2026-10-15",
+  "currency": "USD",
+  "unit": "USD per million tokens",
+  "providers": {
+    "anthropic": {
+      "sourceUrl": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "retrievedAt": "2026-10-15",
+      "inferenceGeoMultipliers": { "us": 1.1 },
+      "models": {
+        "claude-haiku-5-5": {
+          "label": "Claude Haiku 5.5",
+          "longContextAboveInputTokens": 100000,
+          "tiers": {
+            "standard": {
+              "rates": {
+                "input": 0.1,
+                "cacheWrite": 0.125,
+                "cacheWrite1h": 0.2,
+                "cacheRead": 0.01,
+                "output": 0.5
+              },
+              "longContextRates": {
+                "input": 0.5,
+                "cacheWrite": 0.625,
+                "cacheWrite1h": 1,
+                "cacheRead": 0.05,
+                "output": 2.5
+              }
+            }
+          },
+          "image": { "patchPx": 28, "maxLongEdgePx": 2576, "maxPatches": 4784, "multiplier": 1 }
+        },
+        "claude-sonnet-5-5": {
+          "label": "Claude Sonnet 5.5",
+          "tiers": {
+            "standard": {
+              "rates": {
+                "input": 2,
+                "cacheWrite": 2.5,
+                "cacheWrite1h": 4,
+                "cacheRead": 0.1,
+                "output": 10
+              }
+            }
+          },
+          "image": { "patchPx": 28, "maxLongEdgePx": 2576, "maxPatches": 4784, "multiplier": 1 }
+        },
+        "claude-opus-5-5": {
+          "label": "Claude Opus 5.5",
+          "tiers": {
+            "standard": {
+              "rates": {
+                "input": 4,
+                "cacheWrite": 5,
+                "cacheWrite1h": 8,
+                "cacheRead": 0.2,
+                "output": 20
+              }
+            },
+            "fast": {
+              "rates": {
+                "input": 8,
+                "cacheWrite": 10,
+                "cacheWrite1h": 16,
+                "cacheRead": 0.4,
+                "output": 40
+              }
+            }
+          },
+          "image": { "patchPx": 28, "maxLongEdgePx": 2576, "maxPatches": 4784, "multiplier": 1 },
+          "notes": [
+            "Fast mode cache rates are not printed on the page; they apply the standard cache multipliers (1.25x, 2x, 0.05x) to the fast input rate, as the page states."
+          ]
+        }
+      }
+    },
+    "openai": {
+      "sourceUrl": "https://developers.openai.com/api/docs/pricing",
+      "retrievedAt": "2026-10-15",
+      "models": {
+        "gpt-6-luna": {
+          "label": "gpt-6-luna",
+          "longContextAboveInputTokens": 272000,
+          "tiers": {
+            "standard": {
+              "rates": { "input": 0.1, "cacheRead": 0.01, "cacheWrite": 0.125, "output": 0.5 },
+              "longContextRates": {
+                "input": 0.2,
+                "cacheRead": 0.02,
+                "cacheWrite": 0.25,
+                "output": 0.75
+              }
+            },
+            "flex": {
+              "rates": { "input": 0.05, "cacheRead": 0.005, "cacheWrite": 0.0625, "output": 0.25 },
+              "longContextRates": {
+                "input": 0.1,
+                "cacheRead": 0.01,
+                "cacheWrite": 0.125,
+                "output": 0.375
+              }
+            },
+            "fast": {
+              "rates": { "input": 0.2, "cacheRead": 0.02, "cacheWrite": 0.25, "output": 1 },
+              "longContextRates": {
+                "input": 0.4,
+                "cacheRead": 0.04,
+                "cacheWrite": 0.5,
+                "output": 1.5
+              }
+            }
+          },
+          "image": { "patchPx": 32, "maxLongEdgePx": 65535, "multiplier": 1.2 },
+          "notes": [
+            "Image multiplier and sizing are not listed for this model; assumed equal to gpt-6-astra (1.2, auto detail keeps original size)."
+          ]
+        },
+        "gpt-6.1-sol": {
+          "label": "gpt-6.1-sol",
+          "longContextAboveInputTokens": 272000,
+          "tiers": {
+            "standard": {
+              "rates": { "input": 2, "cacheRead": 0.1, "cacheWrite": 2.5, "output": 10 },
+              "longContextRates": { "input": 4, "cacheRead": 0.2, "cacheWrite": 5, "output": 15 }
+            },
+            "flex": {
+              "rates": { "input": 1, "cacheRead": 0.05, "cacheWrite": 1.25, "output": 5 },
+              "longContextRates": { "input": 2, "cacheRead": 0.1, "cacheWrite": 2.5, "output": 7.5 }
+            },
+            "fast": {
+              "rates": { "input": 4, "cacheRead": 0.2, "cacheWrite": 5, "output": 20 },
+              "longContextRates": { "input": 8, "cacheRead": 0.4, "cacheWrite": 10, "output": 30 }
+            },
+            "ultrafast": {
+              "rates": { "input": 12, "cacheRead": 0.6, "cacheWrite": 15, "output": 60 },
+              "longContextRates": { "input": 24, "cacheRead": 1.2, "cacheWrite": 30, "output": 90 }
+            }
+          },
+          "image": { "patchPx": 32, "maxLongEdgePx": 65535, "multiplier": 1.2 },
+          "notes": [
+            "Image multiplier and sizing are not listed for this model; assumed equal to gpt-6-astra (1.2, auto detail keeps original size)."
+          ]
+        },
+        "gpt-5.6-sol": {
+          "label": "gpt-5.6-sol",
+          "longContextAboveInputTokens": 272000,
+          "tiers": {
+            "standard": {
+              "rates": { "input": 4, "cacheRead": 0.4, "cacheWrite": 5, "output": 20 },
+              "longContextRates": { "input": 8, "cacheRead": 0.8, "cacheWrite": 10, "output": 30 }
+            },
+            "flex": {
+              "rates": { "input": 2, "cacheRead": 0.2, "cacheWrite": 2.5, "output": 10 },
+              "longContextRates": { "input": 4, "cacheRead": 0.4, "cacheWrite": 5, "output": 15 }
+            },
+            "fast": {
+              "rates": { "input": 8, "cacheRead": 0.8, "cacheWrite": 10, "output": 40 },
+              "longContextRates": { "input": 16, "cacheRead": 1.6, "cacheWrite": 20, "output": 60 }
+            }
+          },
+          "image": { "patchPx": 32, "maxLongEdgePx": 65535, "multiplier": 1.2 },
+          "notes": ["Promotional price, available at least through 2026-11-21."]
+        }
+      }
+    }
+  }
+}

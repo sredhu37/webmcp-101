@@ -1,0 +1,35 @@
+name: comparer-demo-video
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webmcp-comparer
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - id: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparer-demo-video
+          path: webmcp-comparer/e2e/test-results/**/video.webm
+          if-no-files-found: warn
+      - if: always() && steps.upload.outputs.artifact-url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "Comparer demo video, download the artifact zip: ${{ steps.upload.outputs.artifact-url }}"

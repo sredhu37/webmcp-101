@@ -1,0 +1,16 @@
+node_modules/
+dist/
+runs/
+coverage/
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log
+
+# Agent worktrees (one per task)
+.claude/worktrees/
+
+# e2e demo output
+e2e/test-results/
+e2e/demo-output/
