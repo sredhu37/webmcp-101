@@ -1,0 +1,38 @@
+name: demo-video
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+    if: ${{ hashFiles('e2e/playwright.config.ts') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - run: npm ci
+        if: ${{ hashFiles('package-lock.json') != '' }}
+      - run: npm install
+        working-directory: e2e
+      - run: npx playwright install --with-deps chromium
+        working-directory: e2e
+      - run: npx playwright test
+        working-directory: e2e
+      - id: upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-video
+          path: e2e/test-results/**/video.webm
+          if-no-files-found: warn
+      - if: always() && steps.upload.outputs.artifact-url != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "Demo video, download the artifact zip: ${{ steps.upload.outputs.artifact-url }}"
