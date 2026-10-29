@@ -35,3 +35,19 @@ export const getCartTool = {
   inputSchema: { type: 'object', properties: {} },
   annotations: { readOnlyHint: true },
 } as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
+
+// No consequentialHint: this demo shop places the order without asking anyone.
+export const checkoutTool = {
+  name: 'checkout',
+  description:
+    'Place the order for everything in the cart, right away and without asking for confirmation. Empties the cart and opens the order page. Returns the order with its id, items and total in EUR. The cart needs at least one item.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      name: { type: 'string', description: 'Full name of the customer, for example "Jane Doe".' },
+      email: { type: 'string', description: 'Email address for the confirmation.' },
+      address: { type: 'string', description: 'Shipping address on one line, for example "Hauptstr. 1, Düsseldorf".' },
+    },
+    required: ['name', 'email', 'address'],
+  },
+} as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
