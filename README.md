@@ -6,7 +6,7 @@ Make a website usable by AI browser agents with [WebMCP](https://developer.chrom
 
 | Folder | What it is |
 | --- | --- |
-| [`app/`](app/) | A small demo shop with no WebMCP tools. Add them yourself. |
+| [`app/`](app/) | A small React demo shop with no WebMCP tools. Add them yourself. |
 | [`webmcp-comparer/`](webmcp-comparer/) | Runs the same task on a site twice, with and without WebMCP, and compares time, steps, tokens and cost. |
 
 ## Getting started
