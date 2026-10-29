@@ -14,3 +14,17 @@ export const searchProductsTool = {
   },
   annotations: { readOnlyHint: true },
 } as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
+
+export const addToCartTool = {
+  name: 'add_to_cart',
+  description:
+    'Add one item to the shopping cart. Get the product id and the available sizes from search_products first. Returns the updated cart with its total in EUR. The cart count in the page header updates.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      productId: { type: 'string', description: 'The id of the product, for example "blue-sneakers".' },
+      size: { type: 'string', description: 'One of the sizes listed for the product, for example "M" or "42". Hats use "one size".' },
+    },
+    required: ['productId', 'size'],
+  },
+} as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;

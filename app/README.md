@@ -40,6 +40,7 @@ Tools run in the page, so they call the same functions in `src/shop.ts` that the
 | Tool | Registered on | Does |
 | --- | --- | --- |
 | `search_products` | `/` | Searches the catalog by words and max price, and fills in the search form. Read-only. |
+| `add_to_cart` | `/` | Adds one product in one size to the cart and updates the cart count in the header. |
 
 A tool that fails returns `{ "error": "..." }` as its result. Chrome tells the agent only "invocation failed" when a tool throws, so the message would be lost.
 
