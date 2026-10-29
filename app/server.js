@@ -5,8 +5,9 @@ import { findProduct, products } from './products.js';
 const port = Number(process.env.PORT ?? 4000);
 const app = express();
 
+const dev = process.argv.includes('--dev');
+
 app.use(express.json());
-app.use(express.static(new URL('./public', import.meta.url).pathname, { extensions: ['html'] }));
 
 // Every browser gets its own cart, kept in memory and found by a cookie.
 const carts = new Map();
@@ -77,5 +78,17 @@ app.get('/api/orders/:id', (req, res) => {
   if (!order) return res.status(404).json({ error: 'Order not found.' });
   res.json(order);
 });
+
+// The pages: Vite serves them in dev mode, the built files in dist/ otherwise.
+// Any other path gets index.html, and React Router picks the page.
+if (dev) {
+  const { createServer } = await import('vite');
+  const vite = await createServer({ server: { middlewareMode: true }, appType: 'spa' });
+  app.use(vite.middlewares);
+} else {
+  const dist = new URL('./dist', import.meta.url).pathname;
+  app.use(express.static(dist));
+  app.use((req, res) => res.sendFile('index.html', { root: dist }));
+}
 
 app.listen(port, () => console.log(`Shop on http://localhost:${port}`));
