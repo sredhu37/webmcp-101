@@ -1,0 +1,19 @@
+# Test-only Suite for the to-do fixture (test/fixture/). The tests depend on these ids.
+scenarios:
+  - id: first-open-todo
+    prompt: Which to-do is first in the list?
+    success:
+      - answerContains: Water the plants
+  - id: add-todo
+    prompt: Add a to-do called Buy milk.
+    success:
+      - script: "todos.list().some(t => t.title === 'Buy milk')"
+  - id: create-from-new-page
+    path: /new
+    prompt: Create a to-do called Call the bank.
+    success:
+      - script: "todos.list().some(t => t.title === 'Call the bank')"
+  - id: finish-watering
+    prompt: Mark the to-do Water the plants as done.
+    success:
+      - script: "todos.list().find(t => t.title === 'Water the plants' && t.done)?.done"
