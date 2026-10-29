@@ -103,12 +103,12 @@ describe('WebMCP tools', () => {
   test('the shop page tools go away when you leave, the app tools stay', async () => {
     renderApp();
     expect(await screen.findByText('2 products, cheapest first')).toBeTruthy();
-    expect(webmcp.names()).toEqual(['add_to_cart', 'checkout', 'get_cart', 'search_products']);
+    expect(webmcp.names()).toEqual(['add_to_cart', 'checkout', 'get_cart', 'get_order', 'search_products']);
     expect(webmcp.tool('search_products')?.annotations?.readOnlyHint).toBe(true);
 
     await userEvent.setup().click(screen.getByRole('link', { name: /Cart/ }));
     expect(await screen.findByText('Your cart')).toBeTruthy();
-    expect(webmcp.names()).toEqual(['checkout', 'get_cart']);
+    expect(webmcp.names()).toEqual(['checkout', 'get_cart', 'get_order']);
   });
 
   test('search_products returns matches and shows them on the page', async () => {
@@ -178,5 +178,21 @@ describe('WebMCP tools', () => {
     expect((JSON.parse(result) as Order).id).toBe('1001');
     expect(await screen.findByRole('heading', { name: 'Order placed #1001' })).toBeTruthy();
     expect(document.querySelector('#cart-count')?.textContent).toBe('0');
+  });
+
+  test('get_order returns a placed order, and an error for an unknown id', async () => {
+    renderApp();
+    await screen.findByText('2 products, cheapest first');
+    await act(async () => {
+      await webmcp.run('add_to_cart', { productId: 'black-hat', size: 'one size' });
+      await webmcp.run('checkout', { name: 'Jane Doe', email: 'jane@example.com', address: 'Hauptstr. 1, Düsseldorf' });
+    });
+
+    const order = JSON.parse(String(await webmcp.run('get_order', { id: '1001' }))) as Order;
+    expect(order.address).toBe('Hauptstr. 1, Düsseldorf');
+    expect(order.total).toBe(24.99);
+
+    const missing = JSON.parse(String(await webmcp.run('get_order', { id: '9999' }))) as { error: string };
+    expect(missing.error).toBe('Order not found.');
   });
 });
