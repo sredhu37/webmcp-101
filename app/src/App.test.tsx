@@ -100,10 +100,10 @@ describe('WebMCP tools', () => {
   });
   afterEach(() => webmcp.uninstall());
 
-  test('the shop page registers search_products and removes it when you leave', async () => {
+  test('the shop page registers its tools and removes them when you leave', async () => {
     renderApp();
     expect(await screen.findByText('2 products, cheapest first')).toBeTruthy();
-    expect(webmcp.names()).toEqual(['search_products']);
+    expect(webmcp.names()).toEqual(['add_to_cart', 'search_products']);
     expect(webmcp.tool('search_products')?.annotations?.readOnlyHint).toBe(true);
 
     await userEvent.setup().click(screen.getByRole('link', { name: /Cart/ }));
@@ -132,5 +132,20 @@ describe('WebMCP tools', () => {
     await screen.findByText('2 products, cheapest first');
     const result = JSON.parse(String(await webmcp.run('search_products', { maxPrice: Number.NaN }))) as { error: string };
     expect(result.error).toContain('maxPrice must be a number');
+  });
+
+  test('add_to_cart puts the item in the cart and updates the header count', async () => {
+    renderApp();
+    await screen.findByText('2 products, cheapest first');
+
+    let result = '';
+    await act(async () => {
+      result = String(await webmcp.run('add_to_cart', { productId: 'red-shirt-basic', size: 'M' }));
+    });
+
+    const cart = JSON.parse(result) as { items: CartLine[]; total: number };
+    expect(cart.items.map((item) => `${item.productId}:${item.size}`)).toEqual(['red-shirt-basic:M']);
+    expect(cart.total).toBe(19.99);
+    expect(document.querySelector('#cart-count')?.textContent).toBe('1');
   });
 });

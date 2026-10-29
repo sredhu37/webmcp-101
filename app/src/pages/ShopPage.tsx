@@ -5,7 +5,7 @@ import { formatPrice } from '../format';
 import { ProductImage } from '../ProductImage';
 import { addToCart, searchProducts } from '../shop';
 import type { Product } from '../types';
-import { searchProductsTool } from '../webmcp/tools';
+import { addToCartTool, searchProductsTool } from '../webmcp/tools';
 import { useWebMCPTool } from '../webmcp/useWebMCPTool';
 
 function ProductCard({ product }: { product: Product }) {
@@ -50,6 +50,7 @@ function ProductCard({ product }: { product: Product }) {
 type Filters = { query: string; maxPrice: string };
 
 export function ShopPage() {
+  const { refresh } = useCartCount();
   const [filters, setFilters] = useState<Filters>({ query: '', maxPrice: '' });
   const [products, setProducts] = useState<Product[] | null>(null);
   const latestSearch = useRef(0);
@@ -73,6 +74,12 @@ export function ShopPage() {
     }
     const found = await runSearch({ query: query ?? '', maxPrice: maxPrice === undefined ? '' : String(maxPrice) });
     return JSON.stringify({ count: found.length, products: found });
+  });
+
+  useWebMCPTool(addToCartTool, async ({ productId, size }: { productId: string; size: string }) => {
+    const cart = await addToCart(productId, size);
+    await refresh();
+    return JSON.stringify(cart);
   });
 
   function search(event: SyntheticEvent<HTMLFormElement>) {
