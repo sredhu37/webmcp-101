@@ -100,15 +100,15 @@ describe('WebMCP tools', () => {
   });
   afterEach(() => webmcp.uninstall());
 
-  test('the shop page registers its tools and removes them when you leave', async () => {
+  test('the shop page tools go away when you leave, the app tools stay', async () => {
     renderApp();
     expect(await screen.findByText('2 products, cheapest first')).toBeTruthy();
-    expect(webmcp.names()).toEqual(['add_to_cart', 'search_products']);
+    expect(webmcp.names()).toEqual(['add_to_cart', 'get_cart', 'search_products']);
     expect(webmcp.tool('search_products')?.annotations?.readOnlyHint).toBe(true);
 
     await userEvent.setup().click(screen.getByRole('link', { name: /Cart/ }));
     expect(await screen.findByText('Your cart')).toBeTruthy();
-    expect(webmcp.names()).toEqual([]);
+    expect(webmcp.names()).toEqual(['get_cart']);
   });
 
   test('search_products returns matches and shows them on the page', async () => {
@@ -147,5 +147,17 @@ describe('WebMCP tools', () => {
     expect(cart.items.map((item) => `${item.productId}:${item.size}`)).toEqual(['red-shirt-basic:M']);
     expect(cart.total).toBe(19.99);
     expect(document.querySelector('#cart-count')?.textContent).toBe('1');
+  });
+
+  test('get_cart returns the lines and the total', async () => {
+    renderApp();
+    await screen.findByText('2 products, cheapest first');
+    await act(async () => {
+      await webmcp.run('add_to_cart', { productId: 'black-hat', size: 'one size' });
+    });
+
+    const cart = JSON.parse(String(await webmcp.run('get_cart'))) as { items: CartLine[]; total: number };
+    expect(cart.items.map((item) => item.productId)).toEqual(['black-hat']);
+    expect(cart.total).toBe(24.99);
   });
 });

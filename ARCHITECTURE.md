@@ -16,7 +16,7 @@ flowchart LR
 ## Components
 
 - **Shop app** (`app/`): React 19, Vite and React Router single-page app in `app/src`. Routes: `/`, `/cart`, `/order/:id`. All API calls go through `app/src/shop.ts`.
-- **WebMCP tools** (`app/src/webmcp/`): `useWebMCPTool` registers a tool with `document.modelContext` while a component is mounted and aborts the registration on unmount. `tools.ts` holds each tool's definition; the page that owns the tool supplies the code that runs it.
+- **WebMCP tools** (`app/src/webmcp/`): `useWebMCPTool` registers a tool with `document.modelContext` while a component is mounted and aborts the registration on unmount. `tools.ts` holds each tool's definition; the page that owns the tool supplies the code that runs it, and `ShopTools.tsx` registers the tools that belong to no page.
 - **Shop server** (`app/server.js`): Express. Serves the API under `/api`, and the pages (Vite middleware in dev mode, `app/dist` after `vite build`). Carts and orders live in memory, one cart per browser cookie.
 - **Comparer** (`webmcp-comparer/`): runs a scenario on a site with and without WebMCP. See its own `ARCHITECTURE.md`.
 

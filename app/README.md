@@ -20,7 +20,7 @@ npm run typecheck
 | `src/App.tsx` | The header and the routes: `/`, `/cart`, `/order/:id`. |
 | `src/pages/` | The three pages. Their buttons and forms call the functions in `shop.ts`. |
 | `src/CartProvider.tsx` | The cart count in the header. Pages call `refresh()` after the cart changes. |
-| `src/webmcp/` | `useWebMCPTool` registers a tool while a component is mounted; `tools.ts` holds each tool's name, description and schema. |
+| `src/webmcp/` | `useWebMCPTool` registers a tool while a component is mounted; `tools.ts` holds each tool's name, description and schema; `ShopTools.tsx` registers the tools that belong to no page. |
 | `suite.yaml` | Scenarios for the WebMCP comparer, one per tool. |
 
 The API:
@@ -35,12 +35,13 @@ The API:
 
 ## WebMCP tools
 
-Tools run in the page, so they call the same functions in `src/shop.ts` that the buttons call, and the page shows what they did. They use the imperative API: `document.modelContext.registerTool()`. Each page registers the tools it can show, and the cleanup in `useWebMCPTool` unregisters them when you leave.
+Tools run in the page, so they call the same functions in `src/shop.ts` that the buttons call, and the page shows what they did. They use the imperative API: `document.modelContext.registerTool()`. A tool that changes a page's UI is registered by that page, and the cleanup in `useWebMCPTool` unregisters it when you leave. Tools that need no page are registered once in `src/webmcp/ShopTools.tsx`.
 
 | Tool | Registered on | Does |
 | --- | --- | --- |
 | `search_products` | `/` | Searches the catalog by words and max price, and fills in the search form. Read-only. |
 | `add_to_cart` | `/` | Adds one product in one size to the cart and updates the cart count in the header. |
+| `get_cart` | every page | Returns the cart lines and total. Read-only. |
 
 A tool that fails returns `{ "error": "..." }` as its result. Chrome tells the agent only "invocation failed" when a tool throws, so the message would be lost.
 
