@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { SyntheticEvent } from 'react';
 import { useCartCount } from '../CartProvider';
 import { formatPrice } from '../format';
 import { ProductImage } from '../ProductImage';
 import { addToCart, searchProducts } from '../shop';
 import type { Product } from '../types';
+import { searchProductsTool } from '../webmcp/tools';
+import { useWebMCPTool } from '../webmcp/useWebMCPTool';
 
 function ProductCard({ product }: { product: Product }) {
   const { refresh } = useCartCount();
@@ -45,31 +47,51 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
+type Filters = { query: string; maxPrice: string };
+
 export function ShopPage() {
-  const [filters, setFilters] = useState({ query: '', maxPrice: '' });
+  const [filters, setFilters] = useState<Filters>({ query: '', maxPrice: '' });
   const [products, setProducts] = useState<Product[] | null>(null);
+  const latestSearch = useRef(0);
+
+  // Shows the filters in the form, then the products they match. Used by the form and the tool.
+  async function runSearch(next: Filters) {
+    const search = ++latestSearch.current;
+    setFilters(next);
+    const found = await searchProducts(next);
+    if (search === latestSearch.current) setProducts(found);
+    return found;
+  }
 
   useEffect(() => {
-    let current = true;
-    void searchProducts(filters).then((found) => {
-      if (current) setProducts(found);
-    });
-    return () => {
-      current = false;
-    };
-  }, [filters]);
+    void runSearch({ query: '', maxPrice: '' });
+  }, []);
+
+  useWebMCPTool(searchProductsTool, async ({ query, maxPrice }: { query?: string; maxPrice?: number }) => {
+    if (maxPrice !== undefined && !Number.isFinite(maxPrice)) {
+      throw new Error('maxPrice must be a number in EUR, for example 30.');
+    }
+    const found = await runSearch({ query: query ?? '', maxPrice: maxPrice === undefined ? '' : String(maxPrice) });
+    return JSON.stringify({ count: found.length, products: found });
+  });
 
   function search(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    setFilters({ query: String(form.get('query')), maxPrice: String(form.get('maxPrice')) });
+    void runSearch(filters);
   }
 
   return (
     <main>
       <h1>Clothes, shoes and hats</h1>
       <form id="search" role="search" onSubmit={search}>
-        <input name="query" type="search" placeholder="Search, e.g. red shirt" aria-label="Search" />
+        <input
+          name="query"
+          type="search"
+          placeholder="Search, e.g. red shirt"
+          aria-label="Search"
+          value={filters.query}
+          onChange={(event) => setFilters({ ...filters, query: event.target.value })}
+        />
         <input
           name="maxPrice"
           type="number"
@@ -77,6 +99,8 @@ export function ShopPage() {
           step="0.01"
           placeholder="Max price"
           aria-label="Max price in EUR"
+          value={filters.maxPrice}
+          onChange={(event) => setFilters({ ...filters, maxPrice: event.target.value })}
         />
         <button type="submit">Search</button>
       </form>

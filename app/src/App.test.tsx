@@ -1,8 +1,9 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
-import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { App } from './App';
+import { installFakeModelContext } from './testing/fakeModelContext';
 import type { CartLine, Order, Product } from './types';
 
 const catalog: Product[] = [
@@ -90,4 +91,46 @@ test('add to cart, check out and see the order', async () => {
 test('an unknown order shows the error', async () => {
   renderApp('/order/9999');
   expect(await screen.findByRole('heading', { name: 'Order not found.' })).toBeTruthy();
+});
+
+describe('WebMCP tools', () => {
+  let webmcp: ReturnType<typeof installFakeModelContext>;
+  beforeEach(() => {
+    webmcp = installFakeModelContext();
+  });
+  afterEach(() => webmcp.uninstall());
+
+  test('the shop page registers search_products and removes it when you leave', async () => {
+    renderApp();
+    expect(await screen.findByText('2 products, cheapest first')).toBeTruthy();
+    expect(webmcp.names()).toEqual(['search_products']);
+    expect(webmcp.tool('search_products')?.annotations?.readOnlyHint).toBe(true);
+
+    await userEvent.setup().click(screen.getByRole('link', { name: /Cart/ }));
+    expect(await screen.findByText('Your cart')).toBeTruthy();
+    expect(webmcp.names()).toEqual([]);
+  });
+
+  test('search_products returns matches and shows them on the page', async () => {
+    renderApp();
+    await screen.findByText('2 products, cheapest first');
+
+    let result = '';
+    await act(async () => {
+      result = String(await webmcp.run('search_products', { query: 'hat', maxPrice: 30 }));
+    });
+
+    const data = JSON.parse(result) as { count: number; products: Product[] };
+    expect(data.count).toBe(1);
+    expect(data.products[0]?.id).toBe('black-hat');
+    expect(await screen.findByText('1 products, cheapest first')).toBeTruthy();
+    expect((screen.getByLabelText('Search') as HTMLInputElement).value).toBe('hat');
+  });
+
+  test('search_products returns an error the agent can read when maxPrice is not a number', async () => {
+    renderApp();
+    await screen.findByText('2 products, cheapest first');
+    const result = JSON.parse(String(await webmcp.run('search_products', { maxPrice: Number.NaN }))) as { error: string };
+    expect(result.error).toContain('maxPrice must be a number');
+  });
 });

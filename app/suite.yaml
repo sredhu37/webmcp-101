@@ -1,15 +1,33 @@
-# Scenarios for the WebMCP comparer. Start the shop with `npm start` in app/,
-# then set the Site URL in the comparer to http://localhost:4000.
+# Scenarios for the WebMCP comparer: one per WebMCP tool, in the order the branches add them.
+# Start the shop with `npm start` in app/, then set the Site URL in the comparer to http://localhost:4000.
+# Checks test the outcome, not the route, so they hold for both lanes.
 scenarios:
+  # search_products (webmcp1)
   - id: cheapest-red-shirt-price
     prompt: What does the cheapest red shirt cost?
     success:
       - answerContains: '19.99'
-  - id: add-sneakers-in-size
+
+  # add_to_cart (webmcp2)
+  - id: add-sneakers
     prompt: Add the blue sneakers in size 42 to the cart.
     success:
       - script: "fetch('/api/cart').then(r => r.json()).then(c => c.items.some(i => i.productId === 'blue-sneakers' && i.size === '42'))"
-  - id: two-items-and-checkout
-    prompt: Buy the cheapest red shirt in size M and one black hat, then check out as Jane Doe, jane@example.com, Hauptstr. 1, Düsseldorf.
+
+  # get_cart (webmcp3)
+  - id: cart-total
+    prompt: Add the white tee in size M and the red cap to the cart, then tell me the cart total.
+    success:
+      - answerContains: '32.98'
+
+  # checkout (webmcp4)
+  - id: buy-shirt-and-hat
+    prompt: Buy the cheapest red shirt in size M and the black hat. Check out as Jane Doe, jane@example.com, Hauptstr. 1, Düsseldorf.
     success:
       - textVisible: Order placed
+
+  # get_order (webmcp5)
+  - id: order-shipping-address
+    prompt: Buy the white tee in size M as Jane Doe, jane@example.com, Hauptstr. 1, Düsseldorf. Then tell me the shipping address of the order.
+    success:
+      - answerContains: Hauptstr. 1

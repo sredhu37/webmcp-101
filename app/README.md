@@ -1,6 +1,6 @@
 # Demo Shop
 
-A small React clothing shop (Vite, TypeScript, React Router) with no WebMCP tools. It is the starting point for adding them yourself.
+A small React clothing shop (Vite, TypeScript, React Router). `main` has no WebMCP tools; each `webmcp` branch adds one (see the root README).
 
 ```bash
 npm install
@@ -20,7 +20,8 @@ npm run typecheck
 | `src/App.tsx` | The header and the routes: `/`, `/cart`, `/order/:id`. |
 | `src/pages/` | The three pages. Their buttons and forms call the functions in `shop.ts`. |
 | `src/CartProvider.tsx` | The cart count in the header. Pages call `refresh()` after the cart changes. |
-| `suite.yaml` | Scenarios for the WebMCP comparer. |
+| `src/webmcp/` | `useWebMCPTool` registers a tool while a component is mounted; `tools.ts` holds each tool's name, description and schema. |
+| `suite.yaml` | Scenarios for the WebMCP comparer, one per tool. |
 
 The API:
 
@@ -32,4 +33,14 @@ The API:
 | `POST /api/checkout` | `{ name, email, address }` | The order, and the cart is emptied |
 | `GET /api/orders/:id` | | The order |
 
-WebMCP tools run in the page, so a tool can call the same functions in `src/shop.ts` that the buttons call. In React, register a tool in a `useEffect` and unregister it in the cleanup.
+## WebMCP tools
+
+Tools run in the page, so they call the same functions in `src/shop.ts` that the buttons call, and the page shows what they did. They use the imperative API: `document.modelContext.registerTool()`. Each page registers the tools it can show, and the cleanup in `useWebMCPTool` unregisters them when you leave.
+
+| Tool | Registered on | Does |
+| --- | --- | --- |
+| `search_products` | `/` | Searches the catalog by words and max price, and fills in the search form. Read-only. |
+
+A tool that fails returns `{ "error": "..." }` as its result. Chrome tells the agent only "invocation failed" when a tool throws, so the message would be lost.
+
+To try the tools, open the shop in Chrome with `chrome://flags/#enable-webmcp-testing` enabled, then use the Model Context Tool Inspector extension or the comparer.

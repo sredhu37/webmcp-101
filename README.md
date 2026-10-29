@@ -6,7 +6,7 @@ Make a website usable by AI browser agents with [WebMCP](https://developer.chrom
 
 | Folder | What it is |
 | --- | --- |
-| [`app/`](app/) | A small React demo shop with no WebMCP tools. Add them yourself. |
+| [`app/`](app/) | A small React demo shop. `main` has no WebMCP tools; each `webmcp` branch adds one. |
 | [`webmcp-comparer/`](webmcp-comparer/) | Runs the same task on a site twice, with and without WebMCP, and compares time, steps, tokens and cost. |
 
 ## Getting started
@@ -28,11 +28,21 @@ In the comparer, set the Site URL to http://localhost:4000 and load [`app/suite.
 
 ## Step by step
 
-`main` has the shop without tools. Each `webmcp` branch adds one step on top of the previous one:
+`main` has the shop without tools. Each `webmcp` branch adds one tool, using the imperative API (`document.modelContext.registerTool`), on top of the previous branch:
+
+| Branch | Adds | Scenario in [`app/suite.yaml`](app/suite.yaml) |
+| --- | --- | --- |
+| `webmcp1` | `search_products` | `cheapest-red-shirt-price` |
+| `webmcp2` | `add_to_cart` | `add-sneakers` |
+| `webmcp3` | `get_cart` | `cart-total` |
+| `webmcp4` | `checkout` (places the order, no confirmation) | `buy-shirt-and-hat` |
+| `webmcp5` | `get_order` | `order-shipping-address` |
 
 ```bash
 git switch webmcp1
 ```
+
+To see what a step changed, compare it with the one before: `git diff webmcp1 webmcp2`.
 
 ## Working with AI agents
 
