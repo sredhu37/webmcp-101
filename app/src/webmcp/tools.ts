@@ -31,7 +31,8 @@ export const addToCartTool = {
 
 export const getCartTool = {
   name: 'get_cart',
-  description: 'Get what is in the shopping cart: each line with product, size, quantity and price, and the total in EUR.',
+  description:
+    'Get what is in the shopping cart: each line with product, size, quantity and price, and the total in EUR. Opens the cart page, so the shop page tools (search_products, add_to_cart) are unavailable until you are back on the shop page.',
   inputSchema: { type: 'object', properties: {} },
   annotations: { readOnlyHint: true },
 } as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
