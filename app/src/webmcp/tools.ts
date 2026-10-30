@@ -1,4 +1,6 @@
 // What the shop tells agents about each tool: name, description, input schema, hints.
+// Keep every character ASCII: Chrome 156 drops the input schema from DevTools and CDP when it contains
+// one (for example "ü"), and the WebMCP panel then shows no input fields.
 // The code that runs a tool lives in the page that owns it.
 
 export const searchProductsTool = {
@@ -35,4 +37,20 @@ export const getCartTool = {
     'Get what is in the shopping cart: each line with product, size, quantity and price, and the total in EUR. Opens the cart page, so the shop page tools (search_products, add_to_cart) are unavailable until you are back on the shop page.',
   inputSchema: { type: 'object', properties: {} },
   annotations: { readOnlyHint: true },
+} as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
+
+// No consequentialHint: this demo shop places the order without asking anyone.
+export const checkoutTool = {
+  name: 'checkout',
+  description:
+    'Place the order for everything in the cart, right away and without asking for confirmation. Empties the cart and opens the order page. Returns the order with its id, items and total in EUR. The cart needs at least one item.',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      name: { type: 'string', description: 'Full name of the customer, for example "Jane Doe".' },
+      email: { type: 'string', description: 'Email address for the confirmation.' },
+      address: { type: 'string', description: 'Shipping address on one line, for example "Hauptstr. 1, Berlin".' },
+    },
+    required: ['name', 'email', 'address'],
+  },
 } as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
