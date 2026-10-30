@@ -3,6 +3,7 @@ import { CartProvider, useCartCount } from './CartProvider';
 import { CartPage } from './pages/CartPage';
 import { OrderPage } from './pages/OrderPage';
 import { ShopPage } from './pages/ShopPage';
+import { ShopTools } from './webmcp/ShopTools';
 
 function Header() {
   const { count } = useCartCount();
@@ -21,6 +22,7 @@ function Header() {
 export function App() {
   return (
     <CartProvider>
+      <ShopTools />
       <Header />
       <Routes>
         <Route path="/" element={<ShopPage />} />
