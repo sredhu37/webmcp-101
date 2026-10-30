@@ -1,9 +1,9 @@
 // Tools that do not belong to one page. They are registered once and stay while the shop is open.
 import { useNavigate } from 'react-router';
 import { useCartCount } from '../CartProvider';
-import { checkout, getCart } from '../shop';
+import { checkout, getCart, getOrder } from '../shop';
 import type { CheckoutDetails } from '../types';
-import { checkoutTool, getCartTool } from './tools';
+import { checkoutTool, getCartTool, getOrderTool } from './tools';
 import { useWebMCPTool } from './useWebMCPTool';
 
 export function ShopTools() {
@@ -19,6 +19,12 @@ export function ShopTools() {
   useWebMCPTool(checkoutTool, async (details: CheckoutDetails) => {
     const order = await checkout(details);
     await refresh();
+    void navigate(`/order/${order.id}`);
+    return JSON.stringify(order);
+  });
+
+  useWebMCPTool(getOrderTool, async ({ id }: { id: string }) => {
+    const order = await getOrder(String(id));
     void navigate(`/order/${order.id}`);
     return JSON.stringify(order);
   });

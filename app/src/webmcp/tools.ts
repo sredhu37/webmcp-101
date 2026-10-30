@@ -54,3 +54,17 @@ export const checkoutTool = {
     required: ['name', 'email', 'address'],
   },
 } as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
+
+export const getOrderTool = {
+  name: 'get_order',
+  description:
+    'Get a placed order by its id: customer name, email, shipping address, items and total in EUR. Opens the order page. The id is returned by checkout and shown on the order page as "Order placed #1001".',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      id: { type: 'string', description: 'The order id, for example "1001".' },
+    },
+    required: ['id'],
+  },
+  annotations: { readOnlyHint: true },
+} as const satisfies Omit<WebMCP.ModelContextTool, 'execute'>;
