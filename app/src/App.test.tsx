@@ -149,7 +149,7 @@ describe('WebMCP tools', () => {
     expect(document.querySelector('#cart-count')?.textContent).toBe('1');
   });
 
-  test('get_cart returns the lines and the total', async () => {
+  test('get_cart returns the lines and the total, and opens the cart page', async () => {
     renderApp();
     await screen.findByText('2 products, cheapest first');
     await act(async () => {
@@ -159,6 +159,7 @@ describe('WebMCP tools', () => {
     const cart = JSON.parse(String(await webmcp.run('get_cart'))) as { items: CartLine[]; total: number };
     expect(cart.items.map((item) => item.productId)).toEqual(['black-hat']);
     expect(cart.total).toBe(24.99);
+    expect(await screen.findByRole('heading', { name: 'Your cart' })).toBeTruthy();
   });
 
   test('checkout places the order and opens the order page', async () => {

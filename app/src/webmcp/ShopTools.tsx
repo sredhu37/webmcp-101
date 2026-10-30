@@ -10,7 +10,11 @@ export function ShopTools() {
   const navigate = useNavigate();
   const { refresh } = useCartCount();
 
-  useWebMCPTool(getCartTool, async () => JSON.stringify(await getCart()));
+  useWebMCPTool(getCartTool, async () => {
+    const cart = await getCart();
+    void navigate('/cart');
+    return JSON.stringify(cart);
+  });
 
   useWebMCPTool(checkoutTool, async (details: CheckoutDetails) => {
     const order = await checkout(details);
