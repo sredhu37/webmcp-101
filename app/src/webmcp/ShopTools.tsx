@@ -23,7 +23,11 @@ export function ShopTools() {
     return JSON.stringify(order);
   });
 
-  useWebMCPTool(getOrderTool, async ({ id }: { id: string }) => JSON.stringify(await getOrder(String(id))));
+  useWebMCPTool(getOrderTool, async ({ id }: { id: string }) => {
+    const order = await getOrder(String(id));
+    void navigate(`/order/${order.id}`);
+    return JSON.stringify(order);
+  });
 
   return null;
 }

@@ -43,7 +43,7 @@ Tools run in the page, so they call the same functions in `src/shop.ts` that the
 | `add_to_cart` | `/` | Adds one product in one size to the cart and updates the cart count in the header. |
 | `get_cart` | every page | Returns the cart lines and total, and opens the cart page. Changes no data. |
 | `checkout` | every page | Places the order for the cart, without asking for confirmation, then opens the order page. It sets no `consequentialHint`; a real shop that charges money should. |
-| `get_order` | every page | Returns a placed order by id. Read-only. |
+| `get_order` | every page | Returns a placed order by id and opens the order page. Changes no data. |
 
 A tool that fails returns `{ "error": "..." }` as its result. Chrome tells the agent only "invocation failed" when a tool throws, so the message would be lost.
 
