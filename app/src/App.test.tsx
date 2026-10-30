@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { App } from './App';
 import { installFakeModelContext } from './testing/fakeModelContext';
+import * as tools from './webmcp/tools';
 import type { CartLine, Order, Product } from './types';
 
 const catalog: Product[] = [
@@ -179,5 +180,11 @@ describe('WebMCP tools', () => {
     expect((JSON.parse(result) as Order).id).toBe('1001');
     expect(await screen.findByRole('heading', { name: 'Order placed #1001' })).toBeTruthy();
     expect(document.querySelector('#cart-count')?.textContent).toBe('0');
+  });
+
+  test('tool definitions are ASCII only, or Chrome drops their input schema in DevTools', () => {
+    for (const tool of Object.values(tools)) {
+      expect(JSON.stringify(tool), tool.name).toMatch(/^[\x20-\x7e]*$/);
+    }
   });
 });
