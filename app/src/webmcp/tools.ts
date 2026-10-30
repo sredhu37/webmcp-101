@@ -1,4 +1,6 @@
 // What the shop tells agents about each tool: name, description, input schema, hints.
+// Keep every character ASCII: Chrome 156 drops the input schema from DevTools and CDP when it contains
+// one (for example "ü"), and the WebMCP panel then shows no input fields.
 // The code that runs a tool lives in the page that owns it.
 
 export const searchProductsTool = {
@@ -47,7 +49,7 @@ export const checkoutTool = {
     properties: {
       name: { type: 'string', description: 'Full name of the customer, for example "Jane Doe".' },
       email: { type: 'string', description: 'Email address for the confirmation.' },
-      address: { type: 'string', description: 'Shipping address on one line, for example "Hauptstr. 1, Düsseldorf".' },
+      address: { type: 'string', description: 'Shipping address on one line, for example "Hauptstr. 1, Berlin".' },
     },
     required: ['name', 'email', 'address'],
   },
